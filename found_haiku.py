@@ -1,11 +1,13 @@
 # http://stackoverflow.com/questions/10414957/using-python-to-find-syllables
 # is where i got the bulk of this from
 
+#
+
 import urllib
 from BeautifulSoup import BeautifulSoup
 import re
 import sys
-
+import random
 
 usage = """
 Usage:
@@ -75,17 +77,21 @@ def parsesentences(wordlist):
 
   for sentence in wordlist:
     #sentence is the unicode string, unbroken  
-    print(sentence, '<-sentence variable')
+    #print(sentence, '<-sentence variable')
     words = re.findall(r"[\w']+|[.,!?;]", "%s" % str(sentence))
     #words is the list of unicode strings in a sentence 
-    print(words)
+    #print(words)
     syllablecounter = 0
     sensyllablecounter = 0
     for word in words:
       #print(str(word))
       syllablecounter = countsyllables(str(word))
       sensyllablecounter += syllablecounter
-      print(sensyllablecounter)
+      #print(sensyllablecounter)
+
+      #ensure that you don't overdo it
+      if sensyllablecounter > 7:
+        break
 
 
     if sensyllablecounter == 5:
@@ -93,7 +99,8 @@ def parsesentences(wordlist):
     elif sensyllablecounter == 7:
       worddict[str(sentence)] = sensyllablecounter
     else:
-      print('%s is not a good match!' % sensyllablecounter)
+     # print('%s is not a good match!' % sensyllablecounter)
+      pass
 
   return(worddict)
 
@@ -137,8 +144,37 @@ def main(url):
   
   returnedwl = pulldownurltext(url)
   print('I\'ve got a word list!')
+  finaldict = parsesentences(returnedwl)
+  
   print(parsesentences(returnedwl))
 
+  #now construct the haiku randomly from the dict (yeah i know it's unordered)
+  # i was just playing :)
+
+  haikustring = ''
+  mark = 0
+  line2 = ''
+  line3 = ''
+  
+  for kvpair in finaldict:
+    line = random.choice(finaldict.items())
+    if line[1] == 5:
+        if mark == 0:
+            line1 = line[0]
+            mark = 1
+        else:
+            line3 = line[0]
+
+    else:
+        line2 = line[0]
+    
+  haikustring = line1 + '\n' + line2 + '\n' + line3
+
+  print(haikustring)
+        
+        
+    
+  
 
 
 if __name__ == '__main__':
